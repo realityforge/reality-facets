@@ -23,6 +23,7 @@ module Reality #nodoc
         @key = key.to_sym
         @access_method = options[:access_method] || Reality::Naming.pluralize(@key)
         @container_key = container_key.nil? ? nil : container_key.to_sym
+        @extension_module = nil
 
         if @container_key && !target_manager.target_by_key?(@container_key)
           raise "Target '#{key}' defines container as '#{@container_key}' but no such target exists."
