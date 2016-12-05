@@ -20,3 +20,4 @@ require 'reality/orderedhash'
 
 require 'reality/facets/core'
 require 'reality/facets/target_manager'
+require 'reality/facets/facet_container'
