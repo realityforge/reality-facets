@@ -44,6 +44,10 @@ module Reality #nodoc
         facet_map.values
       end
 
+      def target_manager
+        @target_manager ||= Reality::Facets::TargetManager.new(self)
+      end
+
       private
 
       def register_facet(facet)

@@ -13,6 +13,7 @@ class Reality::TestCase < Minitest::Test
 
       def reset
         facet_map.clear
+        target_manager.reset_targets
       end
     end
   end
