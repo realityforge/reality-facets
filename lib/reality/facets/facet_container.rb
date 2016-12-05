@@ -15,6 +15,11 @@
 module Reality #nodoc
   module Facets #nodoc
     module FacetContainer
+      def self.included(base)
+        parent_class = base.ancestors.select { |a| !a.name.nil? }[0]
+        parent_class.class_eval 'module FacetDefinitions; end'
+      end
+
       def facet?(key)
         facet_by_name?(key)
       end
@@ -46,6 +51,10 @@ module Reality #nodoc
 
       def target_manager
         @target_manager ||= Reality::Facets::TargetManager.new(self)
+      end
+
+      def facet_definitions
+        FacetDefinitions
       end
 
       private

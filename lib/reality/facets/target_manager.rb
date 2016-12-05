@@ -36,6 +36,20 @@ module Reality #nodoc
       attr_reader :key
       attr_reader :container_key
       attr_reader :access_method
+
+      def extension_module?
+        !@extension_module.nil?
+      end
+
+      def extension_module
+        unless @extension_module
+          outer_module = target_manager.container.facet_definitions
+          module_name = "#{::Reality::Naming.pascal_case(key)}Extension"
+          outer_module.class_eval "module #{module_name}\n end"
+          @extension_module = outer_module.const_get(module_name)
+        end
+        @extension_module
+      end
     end
 
     class TargetManager
