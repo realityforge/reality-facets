@@ -67,6 +67,13 @@ module Reality #nodoc
         target
       end
 
+      def target_by_model_class(model_class)
+        target_map.each do |key, target|
+          return target if target.model_class == model_class
+        end
+        raise "Can not find target with model class '#{model_class.name}'"
+      end
+
       def target(model_class, key, container_key = nil, options = {})
         Target.new(self, model_class, key, container_key, options)
       end

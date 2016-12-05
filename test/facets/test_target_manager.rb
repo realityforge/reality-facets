@@ -79,6 +79,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal [], target_manager.target_keys
     assert_equal false, target_manager.target_by_key?(:project)
 
+    assert_raise_message("Can not find target with model class 'Reality::Facets::TestTargetManager::Project'") { target_manager.target_by_model_class(Project) }
 
     target_manager.target(Project, :project)
 
@@ -87,6 +88,8 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal true, target_manager.target_by_key?(:project)
     assert_equal 1, target_manager.targets.size
     assert_equal :project, target_manager.targets[0].key
+    # noinspection RubyArgCount
+    assert_equal :project, target_manager.target_by_model_class(Project).key
 
     target_manager.target(Component, :component, :project, :access_method => 'comps')
 
