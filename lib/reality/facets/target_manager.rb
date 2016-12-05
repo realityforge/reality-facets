@@ -17,8 +17,9 @@ module Reality #nodoc
 
     # A descriptor describing a base type in the system model.
     class Target
-      def initialize(target_manager, key, container_key, options)
+      def initialize(target_manager, model_class, key, container_key, options)
         @target_manager = target_manager
+        @model_class = model_class
         @key = key.to_sym
         @access_method = options[:access_method] || Reality::Naming.pluralize(@key)
         @container_key = container_key.nil? ? nil : container_key.to_sym
@@ -31,6 +32,7 @@ module Reality #nodoc
       end
 
       attr_reader :target_manager
+      attr_reader :model_class
       attr_reader :key
       attr_reader :container_key
       attr_reader :access_method
@@ -65,8 +67,8 @@ module Reality #nodoc
         target
       end
 
-      def target(key, container_key = nil, options = {})
-        Target.new(self, key, container_key, options)
+      def target(model_class, key, container_key = nil, options = {})
+        Target.new(self, model_class, key, container_key, options)
       end
 
       def targets_by_container(container_key)
