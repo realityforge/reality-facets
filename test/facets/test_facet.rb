@@ -1,10 +1,10 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Reality::Facets::TestFacet < Reality::TestCase
-  class Component < Reality.base_element(:name => true, :container_key => :project)
+  class Component < Reality.base_element(:name => true, :container_key => :project, :pre_config_code => 'Reality::TestCase::TestFacetContainer.target_manager.apply_extension(self)')
   end
 
-  class Project < Reality.base_element(:name => true)
+  class Project < Reality.base_element(:name => true, :pre_config_code => 'Reality::TestCase::TestFacetContainer.target_manager.apply_extension(self)')
     def component(name, options = {}, &block)
       component_map[name.to_s] = Component.new(self, name, options, &block)
     end
@@ -43,11 +43,8 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal true, TestFacetContainer.facet_by_name?(:imit)
 
     project = Project.new(:MyProject) do |p|
-      TestFacetContainer.target_manager.apply_extension(p)
       p.enable_facets(:imit)
-      p.component(:MyComponent) do |component|
-        TestFacetContainer.target_manager.apply_extension(component)
-      end
+      p.component(:MyComponent)
     end
     component = project.comps[0]
 
