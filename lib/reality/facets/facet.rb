@@ -39,11 +39,13 @@ module Reality #nodoc
 
             def _enable_facet_#{self.key}!
               @#{self.key}_facet_enabled = true
+              (@enabled_facets ||= []) << :#{self.key}
             end
 
             def _disable_facet_#{self.key}!
               @#{self.key}_facet_enabled = false
               @facet_#{self.key} = nil
+              (@enabled_facets ||= []).delete(:#{self.key})
             end
           RUBY
         end

@@ -56,7 +56,55 @@ module Reality #nodoc
         self.const_get(:FacetDefinitions)
       end
 
+      def activate_facet(object, facet_key)
+        return if object.facet_enabled?(facet_key)
+
+        facet = facet_by_name(facet_key)
+        facet.required_facets.each do |required_facet_key|
+          activate_facet(object, required_facet_key)
+        end
+        facet.suggested_facets.each do |suggested_facet_key|
+          activate_facet(object, suggested_facet_key)
+        end
+        object.send(:"_enable_facet_#{facet_key}!")
+
+        each_contained_model_object(object) do |child|
+          activate_facet(child, facet_key)
+        end
+      end
+
+      def deactivate_facet(object, facet_key)
+        return unless object.facet_enabled?(facet_key)
+        each_contained_model_object(object) do |child|
+          deactivate_facet(child, facet_key)
+        end
+
+        facets.each do |facet|
+          if facet.required_facets.include?(facet_key)
+            deactivate_facet(object, facet.key)
+          end
+        end
+        object.send(:"_disable_facet_#{facet_key}!")
+      end
+
       private
+
+      def each_contained_model_object(object)
+        top_target = target_manager.target_by_model_class(object.class)
+        # noinspection RubyArgCount
+        target_manager.targets_by_container(top_target.key).each do |target|
+          next unless handle_sub_feature?(object, target.key)
+          elements = object.send(target.access_method) || []
+          elements = elements.is_a?(Array) ? elements : [elements]
+          elements.each do |child|
+            yield child
+          end
+        end
+      end
+
+      def handle_sub_feature?(object, sub_feature_key)
+        true
+      end
 
       def register_facet(facet)
         Facets.error("Attempting to redefine facet #{facet.key}") if facet_map[facet.key.to_s]

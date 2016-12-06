@@ -44,6 +44,9 @@ module Reality #nodoc
           module_name = "#{::Reality::Naming.pascal_case(key)}Extension"
           outer_module.class_eval "module #{module_name}\n end"
           @extension_module = outer_module.const_get(module_name)
+          @extension_module.include Faceted
+          @extension_module.class_eval "def facet_container_key; :#{self.container_key}; end" if self.container_key
+          @extension_module.class_eval 'def facet_container; @facet_container; end'
         end
         @extension_module
       end
