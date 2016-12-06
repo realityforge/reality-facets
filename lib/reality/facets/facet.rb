@@ -35,6 +35,8 @@ module Reality #nodoc
               !!(@#{self.key}_facet_enabled ||= false)
             end
 
+            private
+
             def _enable_facet_#{self.key}!
               @#{self.key}_facet_enabled = true
             end
