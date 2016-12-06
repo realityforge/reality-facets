@@ -44,13 +44,13 @@ class Reality::Facets::TestFacet < Reality::TestCase
 
     project = Project.new(:MyProject) do |project|
       target = TestFacetContainer.target_manager.target_by_model_class(project.class)
-      project.class.include target.extension_module if target.extension_module?
+      project.class.include target.extension_module
       project._enable_facet_gwt!
       project._enable_facet_gwt_rpc!
       project._enable_facet_imit!
       project.component(:MyComponent) do |component|
         target = TestFacetContainer.target_manager.target_by_model_class(component.class)
-        component.class.include target.extension_module if target.extension_module?
+        component.class.include target.extension_module
       end
     end
     assert_equal true, project.gwt?

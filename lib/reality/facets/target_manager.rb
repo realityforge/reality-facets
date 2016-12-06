@@ -38,10 +38,6 @@ module Reality #nodoc
       attr_reader :container_key
       attr_reader :access_method
 
-      def extension_module?
-        !@extension_module.nil?
-      end
-
       def extension_module
         unless @extension_module
           outer_module = target_manager.container.facet_definitions
