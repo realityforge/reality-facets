@@ -107,6 +107,7 @@ module Reality #nodoc
       end
 
       def register_facet(facet)
+        target_manager.lock_targets
         Facets.error("Attempting to redefine facet #{facet.key}") if facet_map[facet.key.to_s]
         facet_map[facet.key.to_s] = facet
       end

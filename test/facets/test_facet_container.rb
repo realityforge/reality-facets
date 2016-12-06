@@ -1,6 +1,12 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Reality::Facets::TestFacetContainer < Reality::TestCase
+  class Component < Reality.base_element(:name => true)
+  end
+
+  class Component2 < Reality.base_element(:name => true)
+  end
+
   def test_basic_operation
 
     assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
@@ -13,7 +19,15 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     assert_raise_message("Unknown facet 'gwt'") { TestFacetContainer.facet_by_name(:gwt) }
     assert_raise_message("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
 
+    # Make sure we can add targets
+    TestFacetContainer.target_manager.target(Component, :component)
+
     TestFacetContainer.facet(:gwt)
+
+    # targets should be locked after first facet defined
+    assert_raise_message('Attempting to define target component when targets have been locked.') do
+      TestFacetContainer.target_manager.target(Component, :component)
+    end
 
     assert_equal true, TestFacetContainer.facet_by_name?(:gwt)
     assert_equal true, TestFacetContainer.facet?(:gwt)

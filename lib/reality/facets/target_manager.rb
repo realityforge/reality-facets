@@ -96,13 +96,19 @@ module Reality #nodoc
         target_map.values.select { |target| target.container_key == container_key }
       end
 
+      def lock_targets
+        @targets_locked = true
+      end
+
       def reset_targets
         target_map.clear
+        @targets_locked = false
       end
 
       private
 
       def register_target(target)
+        raise "Attempting to define target #{target.key} when targets have been locked." if (@targets_locked ||= false)
         raise "Attempting to redefine target #{target.key}" if target_map[target.key]
         target_map[target.key] = target
       end
