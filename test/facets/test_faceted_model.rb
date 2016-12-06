@@ -168,4 +168,100 @@ class Reality::Facets::TestFacetedModel < Reality::TestCase
     assert_equal [:jpa, :gwt, :gwt_rpc, :imit, :json], attribute1.enabled_facets
     assert_equal [:jpa, :gwt, :gwt_rpc, :imit, :json], attribute2.enabled_facets
   end
+
+  def test_extension_point
+    TestFacetContainer.target_manager.target(Repository, :repository)
+    TestFacetContainer.target_manager.target(Entity, :entity, :repository)
+    TestFacetContainer.target_manager.target(Attribute, :attribute, :entity)
+
+    TestFacetContainer.facet(:json) do |f|
+      f.enhance(Entity) do
+        def hook2?
+          @hook2 ||= false
+        end
+
+        def hook2
+          @hook2 = true
+        end
+      end
+    end
+
+    TestFacetContainer.facet(:jpa) do |f|
+      f.enhance(Repository) do
+        def hook1?
+          @hook1 ||= false
+        end
+
+        def hook1
+          @hook1 = true
+        end
+
+        def hook2?
+          @hook2 ||= false
+        end
+
+        def hook2
+          @hook2 = true
+        end
+      end
+
+      f.enhance(Attribute) do
+        def hook2?
+          @hook2 ||= false
+        end
+
+        def hook2
+          @hook2 = true
+        end
+      end
+    end
+
+    repository = Repository.new(:MyRepo) do |r|
+      TestFacetContainer.target_manager.apply_extension(r)
+
+      r.enable_facets(:json, :jpa)
+
+      r.entity(:MyEntityA) do |e|
+        TestFacetContainer.target_manager.apply_extension(e)
+        e.disable_facet(:json)
+        e.attribute(:MyAttr1) do |a|
+          TestFacetContainer.target_manager.apply_extension(a)
+        end
+        e.attribute(:MyAttr2) do |a|
+          TestFacetContainer.target_manager.apply_extension(a)
+        end
+      end
+
+      r.entity(:MyEntityB) do |e|
+        TestFacetContainer.target_manager.apply_extension(e)
+      end
+    end
+
+    entity1 = repository.entities[0]
+    entity2 = repository.entities[1]
+    attribute1 = entity1.attributes[0]
+    attribute2 = entity1.attributes[1]
+
+    assert_equal false, repository.jpa.hook1?
+    assert_equal false, repository.jpa.hook2?
+    assert_equal false, entity2.json.hook2?
+    assert_equal false, attribute1.jpa.hook2?
+    assert_equal false, attribute2.jpa.hook2?
+
+    repository.send(:extension_point, :hook1)
+
+    assert_equal true, repository.jpa.hook1?
+    assert_equal false, repository.jpa.hook2?
+    assert_equal false, entity2.json.hook2?
+    assert_equal false, attribute1.jpa.hook2?
+    assert_equal false, attribute2.jpa.hook2?
+
+    repository.send(:extension_point, :hook2)
+
+    assert_equal true, repository.jpa.hook1?
+    assert_equal true, repository.jpa.hook2?
+    assert_equal true, entity2.json.hook2?
+    assert_equal true, attribute1.jpa.hook2?
+    assert_equal true, attribute2.jpa.hook2?
+  end
 end

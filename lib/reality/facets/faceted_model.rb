@@ -82,6 +82,12 @@ module Reality #nodoc
 
       protected
 
+      def extension_point(action)
+        Facets.debug "Facet '#{self}' extension point #{action} started"
+        facet_container.extension_point(self, action)
+        Facets.debug "Facet '#{self}' extension point #{action} completed"
+      end
+
       def activate_facet(facet_key)
         facet_container.activate_facet(self, facet_key)
       end

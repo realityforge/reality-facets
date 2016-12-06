@@ -87,6 +87,28 @@ module Reality #nodoc
         object.send(:"_disable_facet_#{facet_key}!")
       end
 
+      def extension_point(object, action)
+        # noinspection RubyNestedTernaryOperatorsInspection
+        name = object.respond_to?(:qualified_name) ? object.qualified_name : object.respond_to?(:name) ? object.name : object.to_s
+        if object.respond_to?(action, true)
+          Facets.debug "Running '#{action}' hook on #{object.class} #{name}"
+          object.send(action)
+        end
+        object.enabled_facets.each do |facet_key|
+          # Need to check for the magic facet_X method rather than X method directly as
+          # sometimes there is a global method of the same name.
+          method_name = "facet_#{facet_key}"
+          extension_object = object.respond_to?(method_name) ? object.send(method_name) : nil
+          if extension_object && extension_object.respond_to?(action, true)
+            Facets.debug "Running '#{action}' hook on #{facet_key} facet of #{object.class} #{name}"
+            extension_object.send(action)
+          end
+        end
+        each_contained_model_object(object) do |child|
+          extension_point(child, action)
+        end
+      end
+
       private
 
       def each_contained_model_object(object)
