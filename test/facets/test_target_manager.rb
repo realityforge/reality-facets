@@ -62,6 +62,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal :repository, target1.key
     assert_equal nil, target1.container_key
     assert_equal :repositories, target1.access_method
+    assert_equal :repository, target1.inverse_access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::RepositoryExtension', target1.extension_module.name
 
     target2 = Reality::Facets::Target.new(target_manager, DataModule, :data_module, :repository, {})
@@ -71,15 +72,17 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal :data_module, target2.key
     assert_equal :repository, target2.container_key
     assert_equal :data_modules, target2.access_method
+    assert_equal :data_module, target2.inverse_access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::DataModuleExtension', target2.extension_module.name
 
-    target1 = Reality::Facets::Target.new(target_manager, Project, :project, nil, :access_method => 'project_set')
+    target1 = Reality::Facets::Target.new(target_manager, Project, :project, nil, :access_method => :project_set, :inverse_access_method => 'prj')
 
     assert_equal target_manager, target1.target_manager
     assert_equal Project, target1.model_class
     assert_equal :project, target1.key
     assert_equal nil, target1.container_key
     assert_equal :project_set, target1.access_method
+    assert_equal :prj, target1.inverse_access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::ProjectExtension', target1.extension_module.name
 
     assert_raise_message('Attempting to redefine target project') { Reality::Facets::Target.new(target_manager, Project, :project, nil, {}) }

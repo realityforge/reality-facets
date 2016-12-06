@@ -22,6 +22,7 @@ module Reality #nodoc
         @model_class = model_class
         @key = key.to_sym
         @access_method = (options[:access_method] || Reality::Naming.pluralize(@key)).to_sym
+        @inverse_access_method = (options[:inverse_access_method] || @key).to_sym
         @container_key = container_key.nil? ? nil : container_key.to_sym
         @extension_module = nil
 
@@ -37,6 +38,7 @@ module Reality #nodoc
       attr_reader :key
       attr_reader :container_key
       attr_reader :access_method
+      attr_reader :inverse_access_method
 
       def extension_module
         unless @extension_module
