@@ -50,6 +50,22 @@ module Reality #nodoc
         end
         @extension_module
       end
+
+      def apply_extension_to(object)
+        raise "Can not apply extension to model object of type #{object.class} as it is not of expected model type #{model_class.name} for target #{key}" unless object.is_a?(model_class)
+        raise "Attempted to apply extension multiple time to model object of type #{model_class.name} for target #{key}" if object.instance_variable_defined?('@facet_extension_active')
+        object.class.include extension_module
+        object.instance_variable_set('@facet_container', target_manager.container)
+        object.instance_variable_set('@facet_extension_active', true)
+
+        if self.container_key
+          container = object.send(self.container_key)
+          container.enabled_facets.each do |facet_key|
+            object.send(:"_enable_facet_#{facet_key}!")
+          end
+        end
+        object
+      end
     end
 
     class TargetManager
@@ -86,6 +102,10 @@ module Reality #nodoc
           return target if target.model_class == model_class
         end
         raise "Can not find target with model class '#{model_class.name}'"
+      end
+
+      def apply_extension(model)
+        self.target_by_model_class(model.class).apply_extension_to(model)
       end
 
       def target(model_class, key, container_key = nil, options = {})

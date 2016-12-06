@@ -22,7 +22,21 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     end
   end
 
+  class Fragment < Reality.base_element(:name => true, :container_key => :component)
+  end
+
   class Component < Reality.base_element(:name => true, :container_key => :project)
+    def fragment(name, options = {}, &block)
+      fragment_map[name.to_s] = Component.new(self, name, options, &block)
+    end
+
+    def fragments
+      fragment_map.values
+    end
+
+    def fragment_map
+      @fragment_map ||= {}
+    end
   end
 
   class Project < Reality.base_element(:name => true)
@@ -107,5 +121,62 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal :component, target_manager.targets_by_container(:project)[0].key
 
     assert_raise_message("Can not find target with key 'foo'") { target_manager.target_by_key(:foo) }
+  end
+
+  def test_apply_extension
+    TestFacetContainer.target_manager.target(Project, :project)
+    TestFacetContainer.target_manager.target(Component, :component, :project)
+    TestFacetContainer.target_manager.target(Fragment, :fragment, :component)
+
+    TestFacetContainer.facet(:json)
+    TestFacetContainer.facet(:jpa)
+    TestFacetContainer.facet(:gwt) do |f|
+      f.enhance(Project) do
+        def name
+          "Gwt#{project.name}"
+        end
+      end
+    end
+
+    project = Project.new(:MyProject) do |p|
+      p.component(:MyComponent1) do |c|
+        c.fragment(:MyFragment)
+      end
+    end
+
+    component1 = project.components[0]
+    fragment1 = component1.fragments[0]
+
+    assert_equal false, project.respond_to?(:facet_enabled?)
+    assert_equal false, component1.respond_to?(:facet_enabled?)
+    assert_equal false, fragment1.respond_to?(:facet_enabled?)
+
+    TestFacetContainer.target_manager.apply_extension(project)
+    TestFacetContainer.target_manager.apply_extension(component1)
+    TestFacetContainer.target_manager.apply_extension(fragment1)
+
+    assert_equal true, project.respond_to?(:facet_enabled?)
+    assert_equal true, component1.respond_to?(:facet_enabled?)
+    assert_equal true, fragment1.respond_to?(:facet_enabled?)
+
+    project.enable_facets(:json, :gwt)
+
+    assert_equal [:json, :gwt], project.enabled_facets
+
+    assert_equal true, project.respond_to?(:facet_enabled?)
+    assert_equal true, component1.respond_to?(:facet_enabled?)
+    assert_equal true, fragment1.respond_to?(:facet_enabled?)
+
+    assert_equal [:json, :gwt], component1.enabled_facets
+
+    component1.disable_facet(:gwt)
+
+    assert_equal [:json], component1.enabled_facets
+
+    assert_equal true, project.respond_to?(:facet_enabled?)
+    assert_equal true, component1.respond_to?(:facet_enabled?)
+    assert_equal true, fragment1.respond_to?(:facet_enabled?)
+
+    assert_equal [:json], fragment1.enabled_facets
   end
 end
