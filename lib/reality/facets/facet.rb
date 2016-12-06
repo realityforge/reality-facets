@@ -59,7 +59,7 @@ module Reality #nodoc
         definitions = target_manager.container.facet_definitions
           definitions.class_eval "class #{extension_name} < Reality.base_element(:container_key => :#{target.key}); end"
         extension_instance = definitions.const_get(extension_name)
-        extension_instance.class_eval(&block)
+        extension_instance.class_eval(&block) if block_given?
 
         model_extension = target.extension_module
         model_extension.class_eval <<-RUBY
