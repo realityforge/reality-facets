@@ -15,9 +15,8 @@
 module Reality #nodoc
   module Facets #nodoc
     module FacetContainer
-      def self.included(base)
-        parent_class = base.ancestors.select { |a| !a.name.nil? }[0]
-        parent_class.class_eval 'module FacetDefinitions; end'
+      def self.extended(base)
+        base.class_eval 'module FacetDefinitions; end'
       end
 
       def facet?(key)
@@ -54,7 +53,7 @@ module Reality #nodoc
       end
 
       def facet_definitions
-        FacetDefinitions
+        self.const_get(:FacetDefinitions)
       end
 
       private

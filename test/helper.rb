@@ -8,12 +8,15 @@ class Reality::TestCase < Minitest::Test
   include Test::Unit::Assertions
 
   module TestFacetContainer
+    extend Reality::Facets::FacetContainer
     class << self
-      include Reality::Facets::FacetContainer
 
       def reset
         facet_map.clear
         target_manager.reset_targets
+        TestFacetContainer::FacetDefinitions.constants.each do |constant|
+          TestFacetContainer::FacetDefinitions.send(:remove_const, constant)
+        end if TestFacetContainer.const_defined?(:FacetDefinitions)
       end
     end
   end
