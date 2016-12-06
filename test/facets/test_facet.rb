@@ -73,6 +73,8 @@ class Reality::Facets::TestFacet < Reality::TestCase
 
     # Ensure there is a link back to the container using inverse_access_method
     assert_equal project, project.imit.project
+    assert_equal project, project.imit.parent
     assert_equal component, component.imit.comp
+    assert_equal component, component.imit.parent
   end
 end
