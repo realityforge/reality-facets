@@ -17,9 +17,7 @@ module Reality #nodoc
 
     # Module that should be mixed into all model objects that have facets.
     # Implementation should define a method `facet_container` that retrieves
-    # the associated manager. The implementation can also optionally implement
-    # `facet_container_key` that returns the method name which can be used to
-    # retrieve container of facet.
+    # the associated manager.
     module Faceted
 
       def facet_enabled?(facet_key)
