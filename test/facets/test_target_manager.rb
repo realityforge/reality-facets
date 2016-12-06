@@ -61,7 +61,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal Repository, target1.model_class
     assert_equal :repository, target1.key
     assert_equal nil, target1.container_key
-    assert_equal 'repositories', target1.access_method
+    assert_equal :repositories, target1.access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::RepositoryExtension', target1.extension_module.name
 
     target2 = Reality::Facets::Target.new(target_manager, DataModule, :data_module, :repository, {})
@@ -70,7 +70,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal DataModule, target2.model_class
     assert_equal :data_module, target2.key
     assert_equal :repository, target2.container_key
-    assert_equal 'data_modules', target2.access_method
+    assert_equal :data_modules, target2.access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::DataModuleExtension', target2.extension_module.name
 
     target1 = Reality::Facets::Target.new(target_manager, Project, :project, nil, :access_method => 'project_set')
@@ -79,7 +79,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal Project, target1.model_class
     assert_equal :project, target1.key
     assert_equal nil, target1.container_key
-    assert_equal 'project_set', target1.access_method
+    assert_equal :project_set, target1.access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::ProjectExtension', target1.extension_module.name
 
     assert_raise_message('Attempting to redefine target project') { Reality::Facets::Target.new(target_manager, Project, :project, nil, {}) }
@@ -107,7 +107,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     # noinspection RubyArgCount
     assert_equal :project, target_manager.target_by_model_class(Project).key
 
-    target_manager.target(Component, :component, :project, :access_method => 'comps')
+    target_manager.target(Component, :component, :project, :access_method => :comps)
 
     assert_equal true, target_manager.is_target_valid?(:component)
     assert_equal true, target_manager.target_by_key?(:component)
@@ -115,7 +115,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     target = target_manager.target_by_key(:component)
     assert_equal :component, target.key
     assert_equal :project, target.container_key
-    assert_equal 'comps', target.access_method
+    assert_equal :comps, target.access_method
 
     assert_equal 1, target_manager.targets_by_container(:project).size
     assert_equal :component, target_manager.targets_by_container(:project)[0].key

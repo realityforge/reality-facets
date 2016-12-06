@@ -21,7 +21,7 @@ module Reality #nodoc
         @target_manager = target_manager
         @model_class = model_class
         @key = key.to_sym
-        @access_method = options[:access_method] || Reality::Naming.pluralize(@key)
+        @access_method = (options[:access_method] || Reality::Naming.pluralize(@key)).to_sym
         @container_key = container_key.nil? ? nil : container_key.to_sym
         @extension_module = nil
 
