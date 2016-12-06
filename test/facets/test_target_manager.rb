@@ -3,7 +3,6 @@ require File.expand_path('../../helper', __FILE__)
 class Reality::Facets::TestTargetManager < Reality::TestCase
 
   class Unused < Reality.base_element(:name => true)
-
   end
 
   class DataModule < Reality.base_element(:name => true, :container_key => :repository)
