@@ -9,7 +9,7 @@ class Reality::Facets::TestFacet < Reality::TestCase
       component_map[name.to_s] = Component.new(self, name, options, &block)
     end
 
-    def components
+    def comps
       component_map.values
     end
 
