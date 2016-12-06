@@ -49,7 +49,6 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal :repository, target1.key
     assert_equal nil, target1.container_key
     assert_equal 'repositories', target1.access_method
-    assert_equal false, target1.extension_module?
     assert_equal 'Reality::Facets::FacetContainer::FacetDefinitions::RepositoryExtension', target1.extension_module.name
 
     target2 = Reality::Facets::Target.new(target_manager, DataModule, :data_module, :repository, {})
