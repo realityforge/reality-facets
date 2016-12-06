@@ -57,23 +57,21 @@ module Reality #nodoc
 
         extension_name = "#{::Reality::Naming.pascal_case(self.key)}#{model_class.name.gsub(/^.*\:\:([^\:]+)/, '\1')}Facet"
         definitions = target_manager.container.facet_definitions
-        if target.key
           definitions.class_eval "class #{extension_name} < Reality.base_element(:container_key => :#{target.key}); end"
-          extension_instance = definitions.const_get(extension_name)
-          extension_instance.class_eval(&block)
+        extension_instance = definitions.const_get(extension_name)
+        extension_instance.class_eval(&block)
 
-          model_extension = target.extension_module
-          model_extension.class_eval <<-RUBY
-            def #{self.key}
-              self.facet_#{self.key}
-            end
+        model_extension = target.extension_module
+        model_extension.class_eval <<-RUBY
+          def #{self.key}
+            self.facet_#{self.key}
+          end
 
-            def facet_#{self.key}
-              raise "Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled." unless #{self.key}? 
-              @facet_#{self.key} ||= #{extension_instance.name}.new(self)
-            end
-          RUBY
-        end
+          def facet_#{self.key}
+            raise "Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled." unless #{self.key}?
+            @facet_#{self.key} ||= #{extension_instance.name}.new(self)
+          end
+        RUBY
       end
     end
   end
