@@ -25,7 +25,11 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal false, TestFacetContainer.facet_by_name?(:imit)
 
     TestFacetContainer.target_manager.target(Project, :project)
-    TestFacetContainer.target_manager.target(Component, :component, :project, :access_method => 'comps')
+    TestFacetContainer.target_manager.target(Component,
+                                             :component,
+                                             :project,
+                                             :access_method => :comps,
+                                             :inverse_access_method => :comp)
 
     Reality::Facets::Facet.new(TestFacetContainer, :gwt)
     Reality::Facets::Facet.new(TestFacetContainer, :gwt_rpc, :required_facets => [:gwt])
@@ -36,6 +40,7 @@ class Reality::Facets::TestFacet < Reality::TestCase
           "Gwt#{project.name}"
         end
       end
+      f.enhance(Component)
     end
 
     assert_equal true, TestFacetContainer.facet_by_name?(:gwt)
@@ -65,5 +70,9 @@ class Reality::Facets::TestFacet < Reality::TestCase
 
     assert_equal [:gwt, :gwt_rpc, :imit], project.enabled_facets
     assert_equal [:gwt, :gwt_rpc, :imit], component.enabled_facets
+
+    # Ensure there is a link back to the container using inverse_access_method
+    assert_equal project, project.imit.project
+    assert_equal component, component.imit.comp
   end
 end
