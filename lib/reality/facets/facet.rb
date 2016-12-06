@@ -32,7 +32,7 @@ module Reality #nodoc
         facet_container.target_manager.targets.each do |target|
           target.extension_module.class_eval <<-RUBY
             def #{self.key}?
-              !!@#{self.key}_facet_enabled
+              !!(@#{self.key}_facet_enabled ||= false)
             end
 
             def _enable_facet_#{self.key}!
