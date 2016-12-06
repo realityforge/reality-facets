@@ -154,6 +154,10 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal false, component1.respond_to?(:facet_enabled?)
     assert_equal false, fragment1.respond_to?(:facet_enabled?)
 
+    assert_equal false, project.respond_to?(:parent)
+    assert_equal false, component1.respond_to?(:parent)
+    assert_equal false, fragment1.respond_to?(:parent)
+
     TestFacetContainer.target_manager.apply_extension(project)
     TestFacetContainer.target_manager.apply_extension(component1)
     TestFacetContainer.target_manager.apply_extension(fragment1)
@@ -161,6 +165,13 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal true, project.respond_to?(:facet_enabled?)
     assert_equal true, component1.respond_to?(:facet_enabled?)
     assert_equal true, fragment1.respond_to?(:facet_enabled?)
+
+    assert_equal false, project.respond_to?(:parent)
+    assert_equal true, component1.respond_to?(:parent)
+    assert_equal true, fragment1.respond_to?(:parent)
+
+    assert_equal project, component1.parent
+    assert_equal component1, fragment1.parent
 
     project.enable_facets(:json, :gwt)
 
