@@ -167,6 +167,18 @@ class Reality::Facets::TestFacetedModel < Reality::TestCase
     assert_equal [:gwt, :gwt_rpc, :jpa, :imit, :json], entity2.enabled_facets
     assert_equal [:jpa, :gwt, :gwt_rpc, :imit, :json], attribute1.enabled_facets
     assert_equal [:jpa, :gwt, :gwt_rpc, :imit, :json], attribute2.enabled_facets
+
+    attribute2.disable_facets_not_in(:json)
+
+    assert_equal [:json], attribute2.enabled_facets
+
+    attribute1.disable_facets_not_in([:imit])
+
+    assert_equal [:gwt, :gwt_rpc, :imit], attribute1.enabled_facets
+
+    entity2.disable_facets_not_in([:gwt_rpc, :jpa])
+
+    assert_equal [:gwt, :gwt_rpc, :jpa], entity2.enabled_facets
   end
 
   def test_extension_point

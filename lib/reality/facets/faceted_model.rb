@@ -71,9 +71,10 @@ module Reality #nodoc
         end
       end
 
-      def disable_facets_not_in(keys)
+      def disable_facets_not_in(*keys)
         keys = keys[0] if keys.size == 1 && keys[0].is_a?(Array)
-        (self.enabled_facets - keys).each do |facet_key|
+        facets_to_disable = self.enabled_facets - facet_container.dependent_facets(keys)
+        facets_to_disable.each do |facet_key|
           self.disable_facet(facet_key) if self.facet_enabled?(facet_key)
         end
       end
