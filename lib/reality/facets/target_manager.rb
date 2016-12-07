@@ -46,7 +46,7 @@ module Reality #nodoc
           module_name = "#{::Reality::Naming.pascal_case(key)}Extension"
           outer_module.class_eval "module #{module_name}\n end"
           @extension_module = outer_module.const_get(module_name)
-          @extension_module.include Faceted
+          @extension_module.send(:include, Faceted)
           @extension_module.class_eval("def parent; #{self.container_key}; end") if self.container_key
           @extension_module.class_eval 'def facet_container; @facet_container; end'
         end
@@ -56,7 +56,7 @@ module Reality #nodoc
       def apply_extension_to(object)
         raise "Can not apply extension to model object of type #{object.class} as it is not of expected model type #{model_class.name} for target #{key}" unless object.is_a?(model_class)
         raise "Attempted to apply extension multiple time to model object of type #{model_class.name} for target #{key}" if object.instance_variable_defined?('@facet_extension_active')
-        object.class.include extension_module
+        object.class.send(:include, extension_module)
         object.instance_variable_set('@facet_container', target_manager.container)
         object.instance_variable_set('@facet_extension_active', true)
 
