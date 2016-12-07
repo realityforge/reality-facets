@@ -56,6 +56,23 @@ module Reality #nodoc
         self.const_get(:FacetDefinitions)
       end
 
+      def dependent_facets(*facet_keys)
+        facet_keys = facet_keys[0] if facet_keys.size == 1 && facet_keys[0].is_a?(Array)
+        to_process = facet_keys.dup
+        results = []
+        until to_process.empty?
+          facet_key = to_process.pop
+          results << facet_key
+          facet = facet_by_name(facet_key)
+          facet.required_facets.each do |required_facet_key|
+            if !results.include?(required_facet_key) && !to_process.include?(required_facet_key)
+              to_process << required_facet_key
+            end
+          end
+        end
+        results
+      end
+
       def activate_facet(object, facet_key)
         return if object.facet_enabled?(facet_key)
 

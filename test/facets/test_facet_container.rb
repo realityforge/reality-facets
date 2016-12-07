@@ -61,4 +61,16 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
 
     assert_raise_message("Unknown definition form '{:x=>:y, :z=>1}'") { TestFacetContainer.facet(:x => :y, :z => 1) }
   end
+
+  def test_dependent_facets
+    TestFacetContainer.facet(:gwt)
+    TestFacetContainer.facet(:gwt_rpc => [:gwt])
+    TestFacetContainer.facet(:imit => [:gwt_rpc, :jpa])
+    TestFacetContainer.facet(:ee)
+    TestFacetContainer.facet(:jpa => [:ee])
+
+    assert_equal [:gwt], TestFacetContainer.dependent_facets(:gwt)
+    assert_equal [:imit, :jpa, :ee, :gwt_rpc, :gwt].sort, TestFacetContainer.dependent_facets(:imit).sort
+    assert_equal [:jpa, :ee].sort, TestFacetContainer.dependent_facets(:jpa).sort
+  end
 end
