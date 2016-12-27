@@ -77,4 +77,3 @@ module Reality #nodoc
     end
   end
 end
-
