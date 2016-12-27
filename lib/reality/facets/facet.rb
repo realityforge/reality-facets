@@ -69,7 +69,7 @@ module Reality #nodoc
           end
 
           def facet_#{self.key}
-            raise "Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled." unless #{self.key}?
+            Reality::Facets.error("Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled.") unless #{self.key}?
             @facet_#{self.key} ||= #{extension_instance.name}.new(self)
           end
         RUBY

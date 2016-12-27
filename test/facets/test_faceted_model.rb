@@ -87,7 +87,7 @@ class Reality::Facets::TestFacetedModel < Reality::TestCase
     assert_equal [], attribute2.enabled_facets
 
     repository.enable_facet(:imit)
-    assert_raise_message('Facet imit already enabled.') { repository.enable_facet(:imit) }
+    assert_facet_error('Facet imit already enabled.') { repository.enable_facet(:imit) }
 
     assert_equal [:json, :gwt, :gwt_rpc, :jpa, :imit], repository.enabled_facets
     assert_equal [:gwt, :gwt_rpc, :jpa, :imit], entity1.enabled_facets
@@ -136,7 +136,7 @@ class Reality::Facets::TestFacetedModel < Reality::TestCase
     assert_equal [:jpa, :json], attribute1.enabled_facets
     assert_equal [:jpa, :json], attribute2.enabled_facets
 
-    assert_raise_message('Facet json already enabled.') { repository.enable_facets!([:json]) }
+    assert_facet_error('Facet json already enabled.') { repository.enable_facets!([:json]) }
 
     # Try using brackets
     repository.disable_facets([:json, :imit])

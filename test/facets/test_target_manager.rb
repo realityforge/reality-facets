@@ -85,9 +85,9 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal :prj, target1.inverse_access_method
     assert_equal 'Reality::TestCase::TestFacetContainer::FacetDefinitions::ProjectExtension', target1.extension_module.name
 
-    assert_raise_message('Attempting to redefine target project') { Reality::Facets::Target.new(target_manager, Project, :project, nil, {}) }
+    assert_facet_error('Attempting to redefine target project') { Reality::Facets::Target.new(target_manager, Project, :project, nil, {}) }
 
-    assert_raise_message("Target 'foo' defines container as 'bar' but no such target exists.") { Reality::Facets::Target.new(target_manager, Unused, :foo, :bar, {}) }
+    assert_facet_error("Target 'foo' defines container as 'bar' but no such target exists.") { Reality::Facets::Target.new(target_manager, Unused, :foo, :bar, {}) }
   end
 
   def test_target_manager_basic_operation
@@ -98,7 +98,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal [], target_manager.target_keys
     assert_equal false, target_manager.target_by_key?(:project)
 
-    assert_raise_message("Can not find target with model class 'Reality::Facets::TestTargetManager::Project'") { target_manager.target_by_model_class(Project) }
+    assert_facet_error("Can not find target with model class 'Reality::Facets::TestTargetManager::Project'") { target_manager.target_by_model_class(Project) }
 
     target_manager.target(Project, :project)
 
@@ -123,7 +123,7 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
     assert_equal 1, target_manager.targets_by_container(:project).size
     assert_equal :component, target_manager.targets_by_container(:project)[0].key
 
-    assert_raise_message("Can not find target with key 'foo'") { target_manager.target_by_key(:foo) }
+    assert_facet_error("Can not find target with key 'foo'") { target_manager.target_by_key(:foo) }
   end
 
   def test_apply_extension

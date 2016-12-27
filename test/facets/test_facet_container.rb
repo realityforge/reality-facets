@@ -16,8 +16,8 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     assert_equal [], TestFacetContainer.facet_keys
     assert_equal 0, TestFacetContainer.facets.size
 
-    assert_raise_message("Unknown facet 'gwt'") { TestFacetContainer.facet_by_name(:gwt) }
-    assert_raise_message("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
+    assert_facet_error("Unknown facet 'gwt'") { TestFacetContainer.facet_by_name(:gwt) }
+    assert_facet_error("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
 
     # Make sure we can add targets
     TestFacetContainer.target_manager.target(Component, :component)
@@ -25,7 +25,7 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     TestFacetContainer.facet(:gwt)
 
     # targets should be locked after first facet defined
-    assert_raise_message('Attempting to define target component when targets have been locked.') do
+    assert_facet_error('Attempting to define target component when targets have been locked.') do
       TestFacetContainer.target_manager.target(Component, :component)
     end
 
@@ -36,7 +36,7 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     assert_equal %w(gwt), TestFacetContainer.facet_keys
     assert_equal 1, TestFacetContainer.facets.size
 
-    assert_raise_message("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
+    assert_facet_error("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
 
     assert_equal TestFacetContainer, TestFacetContainer.facet_by_name(:gwt).facet_container
     assert_equal :gwt, TestFacetContainer.facet_by_name(:gwt).key
@@ -57,9 +57,9 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     assert_equal [:gwt], TestFacetContainer.facet_by_name(:gwt_rpc).required_facets
     assert_equal [], TestFacetContainer.facet_by_name(:gwt_rpc).suggested_facets
 
-    assert_raise_message('Attempting to redefine facet gwt') { TestFacetContainer.facet(:gwt) }
+    assert_facet_error('Attempting to redefine facet gwt') { TestFacetContainer.facet(:gwt) }
 
-    assert_raise_message("Unknown definition form '{:x=>:y, :z=>1}'") { TestFacetContainer.facet(:x => :y, :z => 1) }
+    assert_facet_error("Unknown definition form '{:x=>:y, :z=>1}'") { TestFacetContainer.facet(:x => :y, :z => 1) }
   end
 
   def test_dependent_facets
