@@ -19,7 +19,7 @@ module Reality #nodoc
       # Copy the targets from the specified generator container to the facet container.
       # This is typically used when projects include both reality-generators and reality-facets
       # and do not want to duplicate the code tor defining targets in both systems
-      def copy_targets_from_generator_target_manager(generator_container, facet_container)
+      def copy_targets_to_generator_target_manager(generator_container, facet_container)
         facet_container.target_manager.targets.each do |target|
           generator_container.target_manager.target(target.key, target.container_key, :access_method => target.access_method)
         end
