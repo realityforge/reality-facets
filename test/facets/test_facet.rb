@@ -63,6 +63,10 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal true, project.respond_to?(:imit)
     assert_equal true, project.respond_to?(:facet_imit)
     assert_equal 'GwtMyProject', project.imit.name
+    assert_equal :imit, project.imit.facet_key
+    assert_equal :project, project.imit.target_key
+    assert_equal :imit, project.imit.class.facet_key
+    assert_equal :project, project.imit.class.target_key
 
     # These methods all test that FacetModule has been mixed in.
     assert_equal 'GwtMyProject', project.facet(:imit).name
@@ -70,6 +74,11 @@ class Reality::Facets::TestFacet < Reality::TestCase
 
     assert_equal [:gwt, :gwt_rpc, :imit], project.enabled_facets
     assert_equal [:gwt, :gwt_rpc, :imit], component.enabled_facets
+
+    assert_equal :imit, component.imit.facet_key
+    assert_equal :component, component.imit.target_key
+    assert_equal :imit, component.imit.class.facet_key
+    assert_equal :component, component.imit.class.target_key
 
     # Ensure there is a link back to the container using inverse_access_method
     assert_equal project, project.imit.project

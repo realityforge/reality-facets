@@ -57,9 +57,30 @@ module Reality #nodoc
 
         extension_name = "#{::Reality::Naming.pascal_case(self.key)}#{model_class.name.gsub(/^.*\:\:([^\:]+)/, '\1')}Facet"
         definitions = target_manager.container.facet_definitions
-        definitions.class_eval("class #{extension_name} < Reality.base_element(:container_key => :#{target.inverse_access_method}); end")
+        definitions.class_eval(<<-RUBY)
+class #{extension_name} < Reality.base_element(:container_key => :#{target.inverse_access_method})
+  def facet_key
+    :#{self.key}
+  end
+
+  def self.facet_key
+    :#{self.key}
+  end
+
+  def target_key
+    :#{target.key}
+  end
+
+  def self.target_key
+    :#{target.key}
+  end
+
+  def parent
+    self.#{target.inverse_access_method}
+  end
+end
+        RUBY
         extension_instance = definitions.const_get(extension_name)
-        extension_instance.class_eval("def parent; self.#{target.inverse_access_method}; end")
         extension_instance.class_eval(&block) if block_given?
 
         model_extension = target.extension_module
