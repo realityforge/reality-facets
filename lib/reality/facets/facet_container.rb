@@ -19,6 +19,18 @@ module Reality #nodoc
         base.class_eval 'module FacetDefinitions; end'
       end
 
+      # An array of modules that should be mixed in to every extension object
+      def facet_extensions
+        facet_extension_list.dup
+      end
+
+      # Add a ruby module that will be applied to all extension objects
+      def facet_extension(extension)
+        Facets.error("Attempting to define facet extension #{extension} after facet manager is locked") if locked?
+        facet_extension_list << extension
+        target_manager.lock!
+      end
+
       def facet?(name)
         facet_by_name?(name)
       end
@@ -50,6 +62,7 @@ module Reality #nodoc
 
       def lock!
         @locked = true
+        apply_facet_extensions
       end
 
       def locked?
@@ -151,6 +164,24 @@ module Reality #nodoc
 
       def handle_sub_feature?(object, sub_feature_key)
         true
+      end
+
+      def apply_facet_extensions
+        facet_extension_list.each do |extension|
+          facet_map.values.each do |facet|
+            target_manager.targets.each do |target|
+              if facet.enhanced?(target.model_class)
+                facet.enhance(target.model_class) do
+                  include extension
+                end
+              end
+            end
+          end
+        end
+      end
+
+      def facet_extension_list
+        @facet_extensions ||= []
       end
 
       def register_facet(facet)

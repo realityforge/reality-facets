@@ -15,6 +15,7 @@ class Reality::TestCase < Minitest::Test
       def reset
         @locked = false
         facet_map.clear
+        facet_extension_list.clear
         target_manager.reset_targets
         TestFacetContainer::FacetDefinitions.constants.each do |constant|
           TestFacetContainer::FacetDefinitions.send(:remove_const, constant)

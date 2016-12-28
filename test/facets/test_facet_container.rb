@@ -7,6 +7,9 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
   class Component2 < Reality.base_element(:name => true)
   end
 
+  module MyExtensionModule
+  end
+
   def test_basic_operation
 
     assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
@@ -35,6 +38,10 @@ class Reality::Facets::TestFacetContainer < Reality::TestCase
     assert_equal false, TestFacetContainer.facet?(:gwt_rpc)
     assert_equal %w(gwt), TestFacetContainer.facet_keys
     assert_equal 1, TestFacetContainer.facets.size
+
+    assert_equal [], TestFacetContainer.facet_extensions
+    TestFacetContainer.facet_extension(MyExtensionModule)
+    assert_equal [MyExtensionModule], TestFacetContainer.facet_extensions
 
     assert_facet_error("Unknown facet 'gwt_rpc'") { TestFacetContainer.facet_by_name(:gwt_rpc) }
 

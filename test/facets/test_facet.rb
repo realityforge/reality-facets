@@ -86,4 +86,61 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal component, component.imit.comp
     assert_equal component, component.imit.parent
   end
+
+  class Component2 < Reality.base_element(:name => true, :container_key => :project, :pre_config_code => 'Reality::TestCase::TestFacetContainer.target_manager.apply_extension(self)')
+  end
+
+  class Project2 < Reality.base_element(:name => true, :pre_config_code => 'Reality::TestCase::TestFacetContainer.target_manager.apply_extension(self)')
+    def component(name, options = {}, &block)
+      component_map[name.to_s] = Component2.new(self, name, options, &block)
+    end
+
+    def components
+      component_map.values
+    end
+
+    def component_map
+      @component_map ||= {}
+    end
+  end
+
+  module MyExtensionModule
+    def hello_message
+      'yo'
+    end
+  end
+
+  def test_common_extension_modules
+
+    assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
+
+    TestFacetContainer.target_manager.target(Project2, :project)
+    TestFacetContainer.target_manager.target(Component2,
+                                             :component,
+                                             :project)
+
+
+    assert_equal [], TestFacetContainer.facet_extensions
+    TestFacetContainer.facet_extension(MyExtensionModule)
+    assert_equal [MyExtensionModule], TestFacetContainer.facet_extensions
+
+    Reality::Facets::Facet.new(TestFacetContainer, :gwt) do |f|
+      f.enhance(Project2) do
+        def name
+          "Gwt#{project.name}"
+        end
+      end
+    end
+
+    project = Project2.new(:MyProject) do |p|
+      p.enable_facets(:gwt)
+      p.component(:MyComponent)
+    end
+    component = project.components[0]
+
+    assert_equal true, project.gwt?
+    assert_equal 'GwtMyProject', project.gwt.name
+    assert_equal 'yo', project.gwt.hello_message
+    assert_equal false, component.respond_to?(:gwt)
+  end
 end
