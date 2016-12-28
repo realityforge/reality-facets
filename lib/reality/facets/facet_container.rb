@@ -19,17 +19,17 @@ module Reality #nodoc
         base.class_eval 'module FacetDefinitions; end'
       end
 
-      def facet?(key)
-        facet_by_name?(key)
+      def facet?(name)
+        facet_by_name?(name)
       end
 
-      def facet_by_name?(key)
-        !!facet_map[key.to_s]
+      def facet_by_name?(name)
+        !!facet_map[name.to_s]
       end
 
-      def facet_by_name(key)
-        facet = facet_map[key.to_s]
-        Facets.error("Unknown facet '#{key}'") unless facet
+      def facet_by_name(name)
+        facet = facet_map[name.to_s]
+        Facets.error("Unknown facet '#{name}'") unless facet
         facet
       end
 
@@ -73,35 +73,35 @@ module Reality #nodoc
         results
       end
 
-      def activate_facet(object, facet_key)
-        return if object.facet_enabled?(facet_key)
+      def activate_facet(object, facet_name)
+        return if object.facet_enabled?(facet_name)
 
-        facet = facet_by_name(facet_key)
+        facet = facet_by_name(facet_name)
         facet.required_facets.each do |required_facet_key|
           activate_facet(object, required_facet_key)
         end
         facet.suggested_facets.each do |suggested_facet_key|
           activate_facet(object, suggested_facet_key)
         end
-        object.send(:"_enable_facet_#{facet_key}!")
+        object.send(:"_enable_facet_#{facet_name}!")
 
         each_contained_model_object(object) do |child|
-          activate_facet(child, facet_key)
+          activate_facet(child, facet_name)
         end
       end
 
-      def deactivate_facet(object, facet_key)
-        return unless object.facet_enabled?(facet_key)
+      def deactivate_facet(object, facet_name)
+        return unless object.facet_enabled?(facet_name)
         each_contained_model_object(object) do |child|
-          deactivate_facet(child, facet_key)
+          deactivate_facet(child, facet_name)
         end
 
         facets.each do |facet|
-          if facet.required_facets.include?(facet_key)
+          if facet.required_facets.include?(facet_name)
             deactivate_facet(object, facet.key)
           end
         end
-        object.send(:"_disable_facet_#{facet_key}!")
+        object.send(:"_disable_facet_#{facet_name}!")
       end
 
       def extension_point(object, action)
@@ -111,13 +111,13 @@ module Reality #nodoc
           Facets.debug "Running '#{action}' hook on #{object.class} #{name}"
           object.send(action)
         end
-        object.enabled_facets.each do |facet_key|
+        object.enabled_facets.each do |facet_name|
           # Need to check for the magic facet_X method rather than X method directly as
           # sometimes there is a global method of the same name.
-          method_name = "facet_#{facet_key}"
+          method_name = "facet_#{facet_name}"
           extension_object = object.respond_to?(method_name) ? object.send(method_name) : nil
           if extension_object && extension_object.respond_to?(action, true)
-            Facets.debug "Running '#{action}' hook on #{facet_key} facet of #{object.class} #{name}"
+            Facets.debug "Running '#{action}' hook on #{facet_name} facet of #{object.class} #{name}"
             extension_object.send(action)
           end
         end
