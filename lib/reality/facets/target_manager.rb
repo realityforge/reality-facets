@@ -123,13 +123,13 @@ module Reality #nodoc
         @locked = true
       end
 
+      def locked?
+        !!@locked
+      end
+
       def reset_targets
         target_map.clear
         @locked = false
-      end
-
-      def locked?
-        !!@locked
       end
 
       private
