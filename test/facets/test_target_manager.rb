@@ -193,4 +193,36 @@ class Reality::Facets::TestTargetManager < Reality::TestCase
 
     assert_equal [:json], fragment1.enabled_facets
   end
+
+  class Project2 < Reality.base_element(:name => true)
+  end
+
+  def test_apply_extension_with_multiple_enhances
+    TestFacetContainer.target_manager.target(Project2, :project)
+
+    TestFacetContainer.facet(:gwt) do |f|
+      f.enhance(Project2) do
+        def name
+          "Gwt#{project.name}"
+        end
+      end
+      f.enhance(Project2) do
+        def name2
+          "Gwt2#{project.name}"
+        end
+      end
+    end
+
+    project = Project2.new(:MyProject)
+    assert_equal false, project.respond_to?(:facet_enabled?)
+    assert_equal false, project.respond_to?(:parent)
+
+    TestFacetContainer.target_manager.apply_extension(project)
+
+    assert_equal true, project.respond_to?(:facet_enabled?)
+    project.enable_facets(:gwt)
+
+    assert_equal 'GwtMyProject', project.gwt.name
+    assert_equal 'Gwt2MyProject', project.gwt.name2
+  end
 end

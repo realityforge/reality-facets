@@ -27,6 +27,7 @@ module Reality #nodoc
         @facet_container = facet_container
         @required_facets = []
         @suggested_facets = []
+        @model_extension_instances = {}
         facet_container.send :register_facet, self
         super(options, &block)
         facet_container.target_manager.targets.each do |target|
@@ -55,9 +56,10 @@ module Reality #nodoc
         target_manager = facet_container.target_manager
         target = target_manager.target_by_model_class(model_class)
 
-        extension_name = "#{::Reality::Naming.pascal_case(self.key)}#{model_class.name.gsub(/^.*\:\:([^\:]+)/, '\1')}Facet"
-        definitions = target_manager.container.facet_definitions
-        definitions.class_eval(<<-RUBY)
+        if @model_extension_instances[model_class].nil?
+          extension_name = "#{::Reality::Naming.pascal_case(self.key)}#{model_class.name.gsub(/^.*\:\:([^\:]+)/, '\1')}Facet"
+          definitions = target_manager.container.facet_definitions
+          definitions.class_eval(<<-RUBY)
 class #{extension_name} < Reality.base_element(:container_key => :#{target.inverse_access_method})
   def facet_key
     :#{self.key}
@@ -79,21 +81,21 @@ class #{extension_name} < Reality.base_element(:container_key => :#{target.inver
     self.#{target.inverse_access_method}
   end
 end
-        RUBY
-        extension_instance = definitions.const_get(extension_name)
-        extension_instance.class_eval(&block) if block_given?
+          RUBY
+          @model_extension_instances[model_class] = definitions.const_get(extension_name)
 
-        model_extension = target.extension_module
-        model_extension.class_eval <<-RUBY
-          def #{self.key}
-            self.facet_#{self.key}
-          end
-
-          def facet_#{self.key}
-            Reality::Facets.error("Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled.") unless #{self.key}?
-            @facet_#{self.key} ||= #{extension_instance.name}.new(self)
-          end
-        RUBY
+          target.extension_module.class_eval <<-RUBY
+            def #{self.key}
+              self.facet_#{self.key}
+            end
+  
+            def facet_#{self.key}
+              Reality::Facets.error("Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled.") unless #{self.key}?
+              @facet_#{self.key} ||= #{@model_extension_instances[model_class].name}.new(self)
+            end
+          RUBY
+        end
+        @model_extension_instances[model_class].class_eval(&block) if block_given?
       end
     end
   end
