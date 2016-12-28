@@ -31,10 +31,10 @@ class Reality::Facets::TestFacet < Reality::TestCase
                                              :access_method => :comps,
                                              :inverse_access_method => :comp)
 
-    Reality::Facets::Facet.new(TestFacetContainer, :gwt)
+    facet_gwt = Reality::Facets::Facet.new(TestFacetContainer, :gwt)
     Reality::Facets::Facet.new(TestFacetContainer, :gwt_rpc, :required_facets => [:gwt])
 
-    Reality::Facets::Facet.new(TestFacetContainer, :imit, :suggested_facets => [:gwt_rpc]) do |f|
+    facet_imit = Reality::Facets::Facet.new(TestFacetContainer, :imit, :suggested_facets => [:gwt_rpc]) do |f|
       f.enhance(Project) do
         def name
           "Gwt#{project.name}"
@@ -46,6 +46,11 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal true, TestFacetContainer.facet_by_name?(:gwt)
     assert_equal true, TestFacetContainer.facet_by_name?(:gwt_rpc)
     assert_equal true, TestFacetContainer.facet_by_name?(:imit)
+
+    assert_equal false, facet_gwt.enhanced?(Project)
+    assert_equal false, facet_gwt.enhanced?(Component)
+    assert_equal true, facet_imit.enhanced?(Project)
+    assert_equal true, facet_imit.enhanced?(Component)
 
     project = Project.new(:MyProject) do |p|
       p.enable_facets(:imit)

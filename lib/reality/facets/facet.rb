@@ -52,6 +52,10 @@ module Reality #nodoc
         end
       end
 
+      def enhanced?(model_class)
+        !!@model_extension_instances[model_class]
+      end
+
       def enhance(model_class, &block)
         target_manager = facet_container.target_manager
         target = target_manager.target_by_model_class(model_class)
