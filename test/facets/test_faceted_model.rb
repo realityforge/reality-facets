@@ -276,4 +276,18 @@ class Reality::Facets::TestFacetedModel < Reality::TestCase
     assert_equal true, attribute1.jpa.hook2?
     assert_equal true, attribute2.jpa.hook2?
   end
+
+  def test_facet_container_locking
+    TestFacetContainer.target_manager.target(Repository, :repository)
+
+    TestFacetContainer.facet(:json)
+
+    assert_equal 1, TestFacetContainer.facets.size
+
+    Repository.new(:MyRepo) do |r|
+      TestFacetContainer.target_manager.apply_extension(r)
+    end
+
+    assert_facet_error('Attempting to define facet gwt after facet manager is locked') { TestFacetContainer.facet(:gwt) }
+  end
 end

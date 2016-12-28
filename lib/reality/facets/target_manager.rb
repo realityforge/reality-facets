@@ -108,6 +108,7 @@ module Reality #nodoc
       end
 
       def apply_extension(model)
+        container.lock!
         self.target_by_model_class(model.class).apply_extension_to(model)
       end
 

@@ -48,6 +48,14 @@ module Reality #nodoc
         facet_map.values
       end
 
+      def lock!
+        @locked = true
+      end
+
+      def locked?
+        !!(@locked ||= nil)
+      end
+
       def target_manager
         @target_manager ||= Reality::Facets::TargetManager.new(self)
       end
@@ -147,6 +155,7 @@ module Reality #nodoc
 
       def register_facet(facet)
         target_manager.lock!
+        Facets.error("Attempting to define facet #{facet.key} after facet manager is locked") if locked?
         Facets.error("Attempting to redefine facet #{facet.key}") if facet_map[facet.key.to_s]
         facet_map[facet.key.to_s] = facet
       end
