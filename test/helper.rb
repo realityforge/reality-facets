@@ -4,6 +4,12 @@ require 'minitest/autorun'
 require 'test/unit/assertions'
 require 'reality/facets'
 
+class Reality::Facets::ExtensionManager
+  def unlock!
+    @locked = false
+  end
+end
+
 class Reality::TestCase < Minitest::Test
   include Test::Unit::Assertions
   include Reality::Logging::Assertions
@@ -14,8 +20,8 @@ class Reality::TestCase < Minitest::Test
 
       def reset
         @locked = false
+        extension_manager.unlock!
         facet_map.clear
-        facet_extension_list.clear
         target_manager.reset_targets
         TestFacetContainer::FacetDefinitions.constants.each do |constant|
           TestFacetContainer::FacetDefinitions.send(:remove_const, constant)

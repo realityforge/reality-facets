@@ -57,6 +57,7 @@ module Reality #nodoc
       end
 
       def enhance(model_class, &block)
+        facet_container.extension_manager.lock!
         target_manager = facet_container.target_manager
         target = target_manager.target_by_model_class(model_class)
 
@@ -87,6 +88,14 @@ class #{extension_name} < Reality.base_element(:container_key => :#{target.inver
 end
           RUBY
           @model_extension_instances[model_class] = definitions.const_get(extension_name)
+
+          facet_container.extension_manager.instance_extensions.each do |extension|
+            @model_extension_instances[model_class].class_eval { include extension }
+          end
+
+          facet_container.extension_manager.singleton_extensions.each do |extension|
+            @model_extension_instances[model_class].singleton_class.class_eval { include extension }
+          end
 
           target.extension_module.class_eval <<-RUBY
             def #{self.key}

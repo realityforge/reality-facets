@@ -115,8 +115,13 @@ class Reality::Facets::TestFacet < Reality::TestCase
     end
   end
 
-  def test_common_extension_modules
+  module MySingletonExtensionModule
+    def blah
+      'X'
+    end
+  end
 
+  def test_common_extension_modules
     assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
 
     TestFacetContainer.target_manager.target(Project2, :project)
@@ -125,9 +130,13 @@ class Reality::Facets::TestFacet < Reality::TestCase
                                              :project)
 
 
-    assert_equal [], TestFacetContainer.facet_extensions
-    TestFacetContainer.facet_extension(MyExtensionModule)
-    assert_equal [MyExtensionModule], TestFacetContainer.facet_extensions
+    assert_equal [], TestFacetContainer.extension_manager.instance_extensions
+    TestFacetContainer.extension_manager.instance_extension(MyExtensionModule)
+    assert_equal [MyExtensionModule], TestFacetContainer.extension_manager.instance_extensions
+
+    assert_equal [], TestFacetContainer.extension_manager.singleton_extensions
+    TestFacetContainer.extension_manager.singleton_extension(MySingletonExtensionModule)
+    assert_equal [MySingletonExtensionModule], TestFacetContainer.extension_manager.singleton_extensions
 
     Reality::Facets::Facet.new(TestFacetContainer, :gwt) do |f|
       f.enhance(Project2) do
@@ -146,6 +155,7 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal true, project.gwt?
     assert_equal 'GwtMyProject', project.gwt.name
     assert_equal 'yo', project.gwt.hello_message
+    assert_equal 'X', project.gwt.class.blah
     assert_equal false, component.respond_to?(:gwt)
   end
 end
