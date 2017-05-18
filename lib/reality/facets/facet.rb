@@ -65,7 +65,7 @@ module Reality #nodoc
           extension_name = "#{::Reality::Naming.pascal_case(self.key)}#{model_class.name.gsub(/^.*\:\:([^\:]+)/, '\1')}Facet"
           definitions = target_manager.container.facet_definitions
           definitions.class_eval(<<-RUBY)
-class #{extension_name} < Reality.base_element(:container_key => :#{target.inverse_access_method})
+class #{extension_name} < Reality.base_element(:container_key => :#{target.inverse_access_method}, :pre_config_code => 'pre_init if respond_to?(:pre_init)', :post_config_code => 'post_init if respond_to?(:post_init)')
   def facet_key
     :#{self.key}
   end

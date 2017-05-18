@@ -157,4 +157,40 @@ class Reality::Facets::TestFacet < Reality::TestCase
     assert_equal 'X', project.gwt.class.blah
     assert_equal false, component.respond_to?(:gwt)
   end
+
+  class Project3 < Reality.base_element(:name => true, :pre_config_code => 'Reality::TestCase::TestFacetContainer.target_manager.apply_extension(self)')
+  end
+
+  def test_pre_and_post_init_hooks
+    assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
+
+    TestFacetContainer.target_manager.target(Project3, :project)
+
+    facet_gwt = Reality::Facets::Facet.new(TestFacetContainer, :gwt) do |f|
+      f.enhance(Project3) do
+
+        attr_accessor :pre_init_ran
+        attr_accessor :post_init_ran
+
+        def pre_init
+          self.pre_init_ran = 'yep'
+        end
+
+        def post_init
+          self.post_init_ran = 'sure did'
+        end
+      end
+    end
+
+    assert_equal true, TestFacetContainer.facet_by_name?(:gwt)
+    assert_equal true, facet_gwt.enhanced?(Project3)
+
+    project = Project3.new(:MyProject) do |p|
+      p.enable_facets(:gwt)
+    end
+
+    assert_equal true, project.gwt?
+    assert_equal 'yep', project.gwt.pre_init_ran
+    assert_equal 'sure did', project.gwt.post_init_ran
+  end
 end
