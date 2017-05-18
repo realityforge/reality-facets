@@ -19,7 +19,6 @@ class Reality::Facets::TestFacet < Reality::TestCase
   end
 
   def test_basic_operation
-
     assert_equal false, TestFacetContainer.facet_by_name?(:gwt)
     assert_equal false, TestFacetContainer.facet_by_name?(:gwt_rpc)
     assert_equal false, TestFacetContainer.facet_by_name?(:imit)
