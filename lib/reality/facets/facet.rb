@@ -101,7 +101,7 @@ end
             def #{self.key}
               self.facet_#{self.key}
             end
-  
+
             def facet_#{self.key}
               Reality::Facets.error("Attempted to access '#{self.key}' facet for model '#{model_class.name}' when facet disabled.") unless #{self.key}?
               @facet_#{self.key} ||= #{@model_extension_instances[model_class].name}.new(self)
