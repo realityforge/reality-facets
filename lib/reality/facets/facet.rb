@@ -18,6 +18,7 @@ module Reality #nodoc
     class Facet < Reality::BaseElement
       attr_reader :facet_container
       attr_reader :key
+      attr_accessor :description
       attr_accessor :required_facets
       attr_accessor :suggested_facets
 
@@ -25,6 +26,7 @@ module Reality #nodoc
         options = options.dup
         @key = key
         @facet_container = facet_container
+        @description = nil
         @required_facets = []
         @suggested_facets = []
         @model_extension_instances = {}
