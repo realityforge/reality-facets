@@ -37,7 +37,7 @@ module Reality #nodoc
         Facets.error("Unknown definition form '#{definition.inspect}'") unless (definition.is_a?(Symbol) || (definition.is_a?(Hash) && 1 == definition.size))
         key = (definition.is_a?(Hash) ? definition.keys[0] : definition).to_sym
         required_facets = definition.is_a?(Hash) ? definition.values[0] : []
-        Reality::Facets::Facet.new(self, key, {:required_facets => required_facets}.merge(options), &block)
+        Reality::Facets::Facet.new(self, key, { :required_facets => required_facets }.merge(options), &block)
       end
 
       def facet_keys
