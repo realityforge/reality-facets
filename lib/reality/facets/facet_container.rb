@@ -124,6 +124,8 @@ module Reality #nodoc
           object.send(action)
         end
         object.enabled_facets.each do |facet_name|
+          # Need to skip facets that have been disabled within same round
+          next unless object.facet_enabled?(facet_name)
           # Need to check for the magic facet_X method rather than X method directly as
           # sometimes there is a global method of the same name.
           method_name = "facet_#{facet_name}"
