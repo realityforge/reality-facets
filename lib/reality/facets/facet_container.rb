@@ -168,7 +168,7 @@ module Reality #nodoc
 
       # Map a facet key to a map. The map maps types to extension classes
       def facet_map
-        @facets ||= Reality::OrderedHash.new
+        @facets ||= {}
       end
     end
   end

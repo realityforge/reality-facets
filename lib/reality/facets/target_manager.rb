@@ -142,7 +142,7 @@ module Reality #nodoc
       end
 
       def target_map
-        @target_map ||= Reality::OrderedHash.new
+        @target_map ||= {}
       end
     end
   end

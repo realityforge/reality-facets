@@ -16,7 +16,6 @@ require 'erb'
 
 require 'reality/core'
 require 'reality/naming'
-require 'reality/orderedhash'
 
 require 'reality/facets/core'
 require 'reality/facets/target_manager'
