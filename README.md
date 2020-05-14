@@ -1,6 +1,6 @@
 # reality-facets
 
-[![Build Status](https://secure.travis-ci.org/realityforge/reality-facets.svg?branch=master)](http://travis-ci.org/realityforge/reality-facets)
+[![Build Status](https://api.travis-ci.com/realityforge/reality-facets.svg?branch=master)](http://travis-ci.org/realityforge/reality-facets)
 
 A basic toolkit for binding facets or extensions to model objects. These classes
 were extracted from several existing toolkits, primarily [Domgen](https://github.com/realityforge/domgen).
